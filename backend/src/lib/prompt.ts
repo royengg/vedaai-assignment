@@ -42,6 +42,8 @@ Requirements:
 5. Include general instructions for students
 6. Make questions relevant to the subject and class level
 7. Ensure total marks match the specified maximum
+8. For Multiple Choice Questions (MCQs), include 4 options (A, B, C, D) in the "options" array field
+9. For non-MCQ questions, omit the "options" field or leave it empty
 
 Generate the question paper in the exact JSON format specified.`;
 }

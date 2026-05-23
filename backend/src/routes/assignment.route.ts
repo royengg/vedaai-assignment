@@ -4,6 +4,7 @@ import { createAssignmentSchema } from "../schemas/assignment.schema";
 import { runLLM } from "../services/qpgenerator";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { buildAIPrompt } from "../lib/prompt";
+import { enqueueAnalysisJob } from "../queues/generation.queue";
 
 export const assignmentRouter = Router();
 
@@ -182,66 +183,45 @@ assignmentRouter.post("/:id/generate", async (req, res) => {
       data: { status: "PROCESSING" },
     });
 
-    const questionTypes = assignment.questionTypes as Array<{
-      type: string;
-      count: number;
-      marks: number;
-    }>;
+    const jobData = {
+      assignmentId: id,
+    };
 
-    const prompt = buildAIPrompt({
-      subjectName: assignment.subjectName,
-      schoolName: assignment.schoolName,
-      className: assignment.className,
-      duration: assignment.duration,
-      questionTypes,
-      additionalInstructions: assignment.additionalInstructions,
-      totalMarks: assignment.totalMarks,
-    });
+    const enqueuedJob = await enqueueAnalysisJob("generateJobs", jobData);
 
-    const qpData = await runLLM(prompt);
-
-    const questionPaper = await prisma.questionPaper.create({
-      data: {
-        assignmentId: assignment.id,
-        documentId: qpData.document_id,
-        institutionName: qpData.paper_meta.institution_name,
-        subject: qpData.paper_meta.subject,
-        className: qpData.paper_meta.class_name,
-        timeAllowed: qpData.paper_meta.time_allowed,
-        maxMarks: qpData.paper_meta.max_marks,
-        generalInstructions: qpData.paper_meta.general_instructions,
-        sections: qpData.sections as any,
-        answerKey: qpData.answer_key as any,
-      },
-    });
-
-    await prisma.assignment.update({
-      where: { id },
-      data: { status: "COMPLETED" },
-    });
-
-    return res.json({
-      success: true,
-      questionPaper: {
-        id: questionPaper.id,
-        documentId: questionPaper.documentId,
-        institutionName: questionPaper.institutionName,
-        subject: questionPaper.subject,
-        className: questionPaper.className,
-        timeAllowed: questionPaper.timeAllowed,
-        maxMarks: questionPaper.maxMarks,
-        generalInstructions: questionPaper.generalInstructions,
-        sections: questionPaper.sections,
-        answerKey: questionPaper.answerKey,
-        createdAt: questionPaper.createdAt,
-      },
-    });
+    return res.status(201).json({ message: "Job Queued" });
   } catch (error) {
     console.error("Generate QP error:", error);
     await prisma.assignment.update({
       where: { id: req.params.id },
-      data: { status: "FAILED" },
+      data: { status: "FAILED to queue job" },
     });
-    return res.status(500).json({ error: "Failed to generate question paper" });
+    return res.status(500).json({ error: "Failed to queue job" });
+  }
+});
+
+assignmentRouter.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const assignment = await prisma.assignment.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!assignment) {
+      return res.status(404).json({ error: "Assignment not found" });
+    }
+
+    await prisma.assignment.delete({
+      where: {
+        id,
+      },
+    });
+
+    return res.status(200).json({ message: "Assignment deleted" });
+  } catch (error) {
+    console.error("Delete assignment error:", error);
+    return res.status(500).json({ error: "Failed to delete assignment" });
   }
 });

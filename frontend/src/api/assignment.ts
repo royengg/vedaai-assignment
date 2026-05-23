@@ -78,4 +78,9 @@ export const assignmentApi = {
     const response = await apiClient.post(`/assignment/${id}/generate`);
     return response.data;
   },
+
+  delete: async (id: string): Promise<{ message: string }> => {
+    const response = await apiClient.delete(`/assignment/${id}`);
+    return response.data;
+  },
 };

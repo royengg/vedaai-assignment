@@ -9,9 +9,10 @@ interface AssignmentCardProps {
   subjectName: string;
   assignedOn: string;
   dueDate: string;
+  onDelete?: (id: string) => void;
 }
 
-export function AssignmentCard({ id, subjectName, assignedOn, dueDate }: AssignmentCardProps) {
+export function AssignmentCard({ id, subjectName, assignedOn, dueDate, onDelete }: AssignmentCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -65,7 +66,10 @@ export function AssignmentCard({ id, subjectName, assignedOn, dueDate }: Assignm
                 View Assignment
               </Link>
               <button
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onDelete?.(id);
+                }}
                 className="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
               >
                 Delete

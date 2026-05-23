@@ -206,6 +206,16 @@ export default function AssignmentDetailPage() {
                               {q.question_text}
                               <span className="text-sm text-gray-500 ml-2">[{q.marks} Marks]</span>
                             </p>
+                            {/* MCQ Options */}
+                            {q.options && q.options.length > 0 && (
+                              <div className="mt-2 ml-1 space-y-1">
+                                {q.options.map((option: string, idx: number) => (
+                                  <p key={idx} className="text-sm text-gray-600">
+                                    {String.fromCharCode(65 + idx)}. {option}
+                                  </p>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}

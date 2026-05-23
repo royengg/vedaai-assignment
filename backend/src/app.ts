@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/auth.routes";
 import { assignmentRouter } from "./routes/assignment.route";
 import cors from "cors";
+import "./workers/generation.worker";
 
 dotenv.config();
 

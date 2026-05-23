@@ -21,6 +21,7 @@ export const qpSchema = z.object({
           question_text: z.string(),
           difficulty: z.enum(["Easy", "Moderate", "Challenging"]),
           marks: z.number(),
+          options: z.array(z.string()).optional(),
         }),
       ),
     }),

@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { BottomNav } from "@/components/bottom-nav";
 import { AssignmentCard } from "@/components/assignment-card";
+import { EmptyState } from "@/components/empty-state";
 import { assignmentApi } from "@/api/assignment";
 import { useAuthStore } from "@/store/auth.store";
 
@@ -52,6 +53,26 @@ export default function AssignmentsPage() {
         a.subjectName.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredAssignments(filtered);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this assignment?")) return;
+    
+    try {
+      await assignmentApi.delete(id);
+      const updated = assignments.filter((a) => a.id !== id);
+      setAssignments(updated);
+      setFilteredAssignments(
+        searchQuery
+          ? updated.filter((a) =>
+              a.subjectName.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+          : updated
+      );
+    } catch (error) {
+      console.error("Failed to delete assignment:", error);
+      alert("Failed to delete assignment");
     }
   };
 
@@ -121,25 +142,17 @@ export default function AssignmentsPage() {
                 subjectName={assignment.subjectName}
                 assignedOn={assignment.createdAt}
                 dueDate={assignment.dueDate}
+                onDelete={handleDelete}
               />
             ))}
           </div>
 
           {/* Empty State */}
-          {filteredAssignments.length === 0 && (
+          {filteredAssignments.length === 0 && !searchQuery && <EmptyState />}
+          
+          {filteredAssignments.length === 0 && searchQuery && (
             <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">
-                {searchQuery ? "No assignments found" : "No assignments yet"}
-              </p>
-              {!searchQuery && (
-                <Link
-                  href="/assignments/create"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-button-dark text-white rounded-full text-sm font-medium"
-                >
-                  <Plus size={16} />
-                  <span>Create Assignment</span>
-                </Link>
-              )}
+              <p className="text-gray-500">No assignments found</p>
             </div>
           )}
         </main>

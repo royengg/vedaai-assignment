@@ -56,6 +56,10 @@ const outputSchema: Schema = {
                   enum: ["Easy", "Moderate", "Challenging"],
                 },
                 marks: { type: SchemaType.NUMBER },
+                options: {
+                  type: SchemaType.ARRAY,
+                  items: { type: SchemaType.STRING },
+                },
               },
               required: ["qid", "question_text", "difficulty", "marks"],
             },

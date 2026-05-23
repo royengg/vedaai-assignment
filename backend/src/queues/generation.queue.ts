@@ -8,7 +8,7 @@ if (!redis) {
   );
 }
 
-export const analyzeJobsQueue = new Queue<Jobs>("analyzeJobs", {
+export const analyzeJobsQueue = new Queue<Jobs>("generateJobs", {
   connection: redis,
   defaultJobOptions: {
     attempts: 3,
