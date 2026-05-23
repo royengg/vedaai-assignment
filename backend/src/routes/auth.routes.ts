@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Router } from "express";
-import { prisma } from "../config/db";
+import { prisma } from "../config/db.config";
 import { registerSchema } from "../schemas/auth.schema";
 import { loginSchema } from "../schemas/auth.schema";
 import bcrypt from "bcrypt";

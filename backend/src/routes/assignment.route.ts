@@ -1,9 +1,7 @@
 import { Router } from "express";
-import { prisma } from "../config/db";
+import { prisma } from "../config/db.config";
 import { createAssignmentSchema } from "../schemas/assignment.schema";
-import { runLLM } from "../services/qpgenerator";
 import { authMiddleware } from "../middleware/auth.middleware";
-import { buildAIPrompt } from "../lib/prompt";
 import { enqueueAnalysisJob } from "../queues/generation.queue";
 
 export const assignmentRouter = Router();

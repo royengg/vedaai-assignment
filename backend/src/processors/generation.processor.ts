@@ -1,4 +1,4 @@
-import { prisma } from "../config/db";
+import { prisma } from "../config/db.config";
 import { Jobs } from "../types/job.types";
 import { Job } from "bullmq";
 import { jobSchema } from "../schemas/job.schema";
