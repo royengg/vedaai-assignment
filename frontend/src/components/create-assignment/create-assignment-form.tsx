@@ -64,8 +64,8 @@ export function CreateAssignmentForm() {
     setQuestionTypes(questionTypes.filter(qt => qt.id !== id));
   };
 
-  const updateQuestionType = (id: string, updates: Partial<QuestionType>) => {
-    setQuestionTypes(questionTypes.map(qt => qt.id === id ? { ...qt, ...updates } : qt));
+  const updateQuestionType = (id: string, updates: { type?: string; count?: number; marks?: number }) => {
+    setQuestionTypes(prev => prev.map(qt => qt.id === id ? { ...qt, ...updates } : qt));
   };
 
   const validateForm = () => {
@@ -123,7 +123,7 @@ export function CreateAssignmentForm() {
       )}
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto min-h-0 pb-8">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {/* Form Card */}
         <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-sm">
           {/* Header */}
@@ -271,8 +271,8 @@ export function CreateAssignmentForm() {
       </div>
 
       {/* Create Button */}
-      <div className="mt-6 md:mt-8 flex-shrink-0">
-        <div className="flex items-center justify-end pt-6">
+      <div className="mt-4 flex-shrink-0">
+        <div className="flex items-center justify-end">
           <button
             onClick={handleCreate}
             disabled={isLoading}

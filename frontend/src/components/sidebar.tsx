@@ -29,8 +29,12 @@ export function Sidebar() {
       <div className="px-6 pt-6 pb-8">
         <div className="flex items-center gap-2">
           {/* Logo Icon */}
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-400 via-red-500 to-red-700 flex items-center justify-center shadow-md">
-            <span className="text-white font-bold text-sm">V</span>
+          <div className="w-9 h-9 rounded-lg overflow-hidden shadow-md">
+            <img
+              src="/vedaai-logo.png"
+              alt="VedaAI Logo"
+              className="w-full h-full object-cover"
+            />
           </div>
           <span className="text-xl font-bold text-text-active tracking-tight">
             VedaAI
@@ -74,6 +78,7 @@ export function Sidebar() {
         <UserProfileCard
           schoolName="Delhi Public School"
           location="Bokaro Steel City"
+          avatarUrl="/dps_logo1.png"
         />
       </div>
     </aside>

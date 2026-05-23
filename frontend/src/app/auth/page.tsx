@@ -39,7 +39,7 @@ export default function AuthPage() {
         });
         login(data.user);
       }
-      router.push("/assignments/create");
+      router.push("/assignments");
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
@@ -58,8 +58,12 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 via-red-500 to-red-700 mb-4 shadow-md">
-            <span className="text-white font-bold text-xl">V</span>
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl overflow-hidden mb-4 shadow-md">
+            <img
+              src="/vedaai-logo.png"
+              alt="VedaAI Logo"
+              className="w-full h-full object-cover"
+            />
           </div>
           <h1 className="text-2xl font-bold text-gray-800">
             {isLogin ? "Welcome Back" : "Create Account"}

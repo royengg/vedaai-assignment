@@ -66,7 +66,7 @@ export function Header() {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2.5 pl-2 pr-1 py-1.5 rounded-xl hover:bg-black/5 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-yellow-300 to-orange-400 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
                   <span className="text-white text-xs font-bold">
                     {user.split(" ").map(n => n[0]).join("").toUpperCase()}
                   </span>
@@ -108,8 +108,12 @@ export function Header() {
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
           {/* Logo Icon */}
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 via-red-500 to-red-700 flex items-center justify-center shadow-sm">
-            <span className="text-white font-bold text-xs">V</span>
+          <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm">
+            <img
+              src="/vedaai-logo.png"
+              alt="VedaAI Logo"
+              className="w-full h-full object-cover"
+            />
           </div>
           <span className="text-lg font-bold text-text-active tracking-tight">
             VedaAI
