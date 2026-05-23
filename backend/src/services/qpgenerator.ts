@@ -79,19 +79,19 @@ const outputSchema: Schema = {
   required: ["document_id", "paper_meta", "sections", "answer_key"],
 };
 
-export async function runLLM(pdfData: string): Promise<QP> {
+export async function runLLM(prompt: string): Promise<QP> {
   const config = {
     temperature: 0.2,
     maxOutputTokens: 8000,
     responseMimeType: "application/json",
     responseSchema: outputSchema,
   };
-  const prompt = "";
 
   const model = llm.getGenerativeModel({
     model: "gemini-2.5-flash",
     generationConfig: config,
   });
+  
   const res = await model.generateContent(prompt);
   const rawText = res.response.text();
 

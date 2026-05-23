@@ -1,25 +1,22 @@
 "use client";
 
 import { ChevronDown, X, Minus, Plus } from "lucide-react";
-import { useState } from "react";
 
 interface QuestionTypeRowProps {
   type: string;
   count: number;
   marks: number;
   onRemove?: () => void;
+  onUpdate?: (updates: { count?: number; marks?: number }) => void;
 }
 
-export function QuestionTypeRow({ type, count: initialCount, marks: initialMarks, onRemove }: QuestionTypeRowProps) {
-  const [count, setCount] = useState(initialCount);
-  const [marks, setMarks] = useState(initialMarks);
-
+export function QuestionTypeRow({ type, count, marks, onRemove, onUpdate }: QuestionTypeRowProps) {
   const adjustCount = (delta: number) => {
-    setCount(prev => Math.max(0, prev + delta));
+    onUpdate?.({ count: Math.max(0, count + delta) });
   };
 
   const adjustMarks = (delta: number) => {
-    setMarks(prev => Math.max(0, prev + delta));
+    onUpdate?.({ marks: Math.max(0, marks + delta) });
   };
 
   return (

@@ -18,5 +18,41 @@ model User {
   name      String?
   password  String
   createdAt DateTime    @default(now())
+  assignments Assignment[]
+}
 
+model Assignment {
+  id                     String   @id @default(uuid())
+  userId                 String
+  user                   User     @relation(fields: [userId], references: [id])
+  subjectName            String
+  schoolName             String
+  className              String
+  duration               String
+  dueDate                String
+  questionTypes          Json
+  additionalInstructions String?
+  totalQuestions         Int
+  totalMarks             Int
+  status                 String   @default("PENDING")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  questionPaper          QuestionPaper?
+}
+
+model QuestionPaper {
+  id                  String   @id @default(uuid())
+  assignmentId        String   @unique
+  assignment          Assignment @relation(fields: [assignmentId], references: [id])
+  documentId          String
+  institutionName     String
+  subject             String
+  className           String
+  timeAllowed         String
+  maxMarks            Int
+  generalInstructions String
+  sections            Json
+  answerKey           Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
