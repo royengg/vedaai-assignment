@@ -33,7 +33,7 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      FRONTEND_URL: ${FRONTEND_URL}
+      FRONTEND_URL: ${FRONTEND_URL:-https://app-vedaai.sslip.io}
     deploy:
       resources:
         limits:
@@ -46,7 +46,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://vedaai-api.sslip.io}
     restart: unless-stopped
     depends_on:
       - backend
