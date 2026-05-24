@@ -4,11 +4,12 @@ services:
   # Redis for Job Queues
   redis:
     image: redis:7-alpine
-    container_name: vedaai-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
+    expose:
+      - "6379"
     deploy:
       resources:
         limits:
@@ -20,10 +21,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: vedaai-backend
     restart: unless-stopped
     depends_on:
       - redis
+    expose:
+      - "3001"
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -45,10 +47,11 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    container_name: vedaai-frontend
     restart: unless-stopped
     depends_on:
       - backend
+    expose:
+      - "3000"
     deploy:
       resources:
         limits:
