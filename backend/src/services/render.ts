@@ -81,16 +81,10 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
   doc.text(`Class: ${sanitizeForPdf(data.className)}`, { align: "center" });
   doc.moveDown(0.5);
 
-  // Meta row — two text() calls at same y, then manually advance
+  // Meta row
   doc.fontSize(11).font("Helvetica").fillColor("#4B5563");
-  const metaY = doc.y;
-  const timeText = `Time Allowed: ${sanitizeForPdf(data.timeAllowed)}`;
-  const maxMarksText = `Maximum Marks: ${data.maxMarks}`;
-  const maxMarksWidth = doc.widthOfString(maxMarksText);
-
-  doc.text(timeText, 55, metaY, { lineBreak: false });
-  doc.text(maxMarksText, doc.page.width - 55 - maxMarksWidth, metaY, { lineBreak: false });
-  doc.y = metaY + 15;
+  doc.text(`Time Allowed: ${sanitizeForPdf(data.timeAllowed)}`, { continued: true });
+  doc.text(`                                             Maximum Marks: ${data.maxMarks}`, { align: "right" });
   doc.moveDown(0.8);
 
   // Divider
@@ -236,15 +230,7 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
     });
   }
 
-  doc.end();
-
-  await new Promise<void>((resolve, reject) => {
-    doc.on("end", resolve);
-    doc.on("error", reject);
-  });
-
   // --- FOOTERS ---
-  // Use tracked page count instead of bufferedPageRange() to avoid phantom pages
   const totalPages = currentPageIndex + 1;
 
   for (let i = 0; i < totalPages; i++) {
@@ -267,6 +253,13 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
       break;
     }
   }
+
+  doc.end();
+
+  await new Promise<void>((resolve, reject) => {
+    doc.on("end", resolve);
+    doc.on("error", reject);
+  });
 
   return { buffer: Buffer.concat(chunks), pages: totalPages };
 }

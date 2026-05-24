@@ -236,9 +236,10 @@ assignmentRouter.get("/:id/pdf", async (req, res) => {
     res.set("Content-Length", String(buffer.length));
     res.send(buffer);
   } catch (error) {
+    console.error("PDF render error:", error);
     res
       .status(500)
-      .json({ message: "Failed to render assignment", error: error });
+      .json({ message: "Failed to render assignment", error: String(error) });
   }
 });
 
