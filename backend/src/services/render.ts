@@ -83,12 +83,22 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
 
   // Meta row
   doc.fontSize(11).font("Helvetica").fillColor("#4B5563");
-  doc.text(`Time Allowed: ${sanitizeForPdf(data.timeAllowed)}`, { continued: true });
-  doc.text(`                                             Maximum Marks: ${data.maxMarks}`, { align: "right" });
+  doc.text(`Time Allowed: ${sanitizeForPdf(data.timeAllowed)}`, {
+    continued: true,
+  });
+  doc.text(
+    `                                             Maximum Marks: ${data.maxMarks}`,
+    { align: "right" },
+  );
   doc.moveDown(0.8);
 
   // Divider
-  doc.moveTo(55, doc.y).lineTo(doc.page.width - 55, doc.y).lineWidth(1).strokeColor("#E5E7EB").stroke();
+  doc
+    .moveTo(55, doc.y)
+    .lineTo(doc.page.width - 55, doc.y)
+    .lineWidth(1)
+    .strokeColor("#E5E7EB")
+    .stroke();
   doc.moveDown(0.6);
 
   // General Instructions
@@ -147,7 +157,8 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
 
     // Questions
     section.questions.forEach((q, qIdx) => {
-      const questionHeight = q.options && q.options.length > 0 ? 80 + q.options.length * 16 : 50;
+      const questionHeight =
+        q.options && q.options.length > 0 ? 80 + q.options.length * 16 : 50;
       if (addPageIfNeeded(doc, questionHeight)) {
         currentPageIndex++;
       }
@@ -166,7 +177,10 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
       doc.save();
       const badgeWidth = doc.widthOfString(q.difficulty) + 8;
       const badgeHeight = 14;
-      doc.roundedRect(73, doc.y - 2, badgeWidth, badgeHeight, 3).fillColor(colors.bg).fill();
+      doc
+        .roundedRect(73, doc.y - 2, badgeWidth, badgeHeight, 3)
+        .fillColor(colors.bg)
+        .fill();
       doc.fontSize(7).font("Helvetica").fillColor(colors.text);
       doc.text(sanitizeForPdf(q.difficulty), 77, doc.y + 1);
       doc.restore();
@@ -191,7 +205,12 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
     // Section divider (except last)
     if (sIdx < data.sections.length - 1) {
       doc.moveDown(0.6);
-      doc.moveTo(55, doc.y).lineTo(doc.page.width - 55, doc.y).lineWidth(0.5).strokeColor("#F3F4F6").stroke();
+      doc
+        .moveTo(55, doc.y)
+        .lineTo(doc.page.width - 55, doc.y)
+        .lineWidth(0.5)
+        .strokeColor("#F3F4F6")
+        .stroke();
       doc.moveDown(0.6);
     }
   });
@@ -236,7 +255,9 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
   for (let i = 0; i < totalPages; i++) {
     try {
       doc.switchToPage(i);
-      const pageLabel = answerKeyPageIndices.has(i) ? "Answer Key" : "Question Paper";
+      const pageLabel = answerKeyPageIndices.has(i)
+        ? "Answer Key"
+        : "Question Paper";
       doc.fontSize(8).font("Helvetica").fillColor("#9CA3AF");
       doc.text(
         `${sanitizeForPdf(data.subject)} • ${pageLabel} • Page ${i + 1} of ${totalPages}`,
@@ -246,7 +267,7 @@ export async function renderQuestionPaperToPdfBuffer(data: QuestionPaperData) {
           align: "center",
           width: doc.page.width,
           lineBreak: false,
-        }
+        },
       );
     } catch {
       // Page doesn't exist, stop writing footers

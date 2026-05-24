@@ -1,0 +1,14 @@
+{
+  "name": "vedaai-assignment",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"bun run dev:backend\" \"bun run dev:frontend\" --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,green\"",
+    "dev:backend": "cd backend && bun run src/app.ts",
+    "dev:frontend": "cd frontend && bun run dev",
+    "install:all": "cd frontend && bun install && cd ../backend && bun install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
