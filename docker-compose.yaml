@@ -9,11 +9,6 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     deploy:
       resources:
         limits:
@@ -28,8 +23,7 @@ services:
     container_name: vedaai-backend
     restart: unless-stopped
     depends_on:
-      redis:
-        condition: service_healthy
+      - redis
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -38,18 +32,6 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       FRONTEND_URL: ${FRONTEND_URL}
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "bun",
-          "-e",
-          "fetch('http://localhost:3001/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
     deploy:
       resources:
         limits:
@@ -67,13 +49,6 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
-    healthcheck:
-      test:
-        ["CMD-SHELL", "bun -e \"fetch('http://127.0.0.1:3000/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))\""]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
     deploy:
       resources:
         limits:
