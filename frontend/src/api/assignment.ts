@@ -1,4 +1,8 @@
+import axios from "axios";
 import { apiClient } from "./client";
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 export interface QuestionTypeInput {
   type: string;
@@ -59,7 +63,9 @@ export interface QuestionPaper {
 }
 
 export const assignmentApi = {
-  create: async (data: CreateAssignmentInput): Promise<{ success: boolean; assignment: Assignment }> => {
+  create: async (
+    data: CreateAssignmentInput,
+  ): Promise<{ success: boolean; assignment: Assignment }> => {
     const response = await apiClient.post("/assignment/create", data);
     return response.data;
   },
@@ -69,18 +75,31 @@ export const assignmentApi = {
     return response.data;
   },
 
-  getById: async (id: string): Promise<{ success: boolean; assignment: Assignment & { questionPaper?: QuestionPaper } }> => {
+  getById: async (
+    id: string,
+  ): Promise<{
+    success: boolean;
+    assignment: Assignment & { questionPaper?: QuestionPaper };
+  }> => {
     const response = await apiClient.get(`/assignment/${id}`);
     return response.data;
   },
 
-  generate: async (id: string): Promise<{ success: boolean; questionPaper: QuestionPaper }> => {
+  generate: async (id: string) => {
     const response = await apiClient.post(`/assignment/${id}/generate`);
     return response.data;
   },
 
   delete: async (id: string): Promise<{ message: string }> => {
     const response = await apiClient.delete(`/assignment/${id}`);
+    return response.data;
+  },
+
+  downloadPdf: async (id: string): Promise<Blob> => {
+    const response = await axios.get(`${API_BASE_URL}/assignment/${id}/pdf`, {
+      responseType: "blob",
+      withCredentials: true,
+    });
     return response.data;
   },
 };

@@ -3,6 +3,7 @@ import { prisma } from "../config/db.config";
 import { createAssignmentSchema } from "../schemas/assignment.schema";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { enqueueAnalysisJob } from "../queues/generation.queue";
+import { renderQuestionPaperToPdfBuffer } from "../services/render";
 
 export const assignmentRouter = Router();
 
@@ -195,6 +196,49 @@ assignmentRouter.post("/:id/generate", async (req, res) => {
       data: { status: "FAILED to queue job" },
     });
     return res.status(500).json({ error: "Failed to queue job" });
+  }
+});
+
+assignmentRouter.get("/:id/pdf", async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ error: "Missing assignment ID" });
+  }
+
+  try {
+    const assignment = await prisma.assignment.findFirst({
+      where: {
+        id: id,
+      },
+      include: {
+        questionPaper: true,
+      },
+    });
+    if (!assignment) {
+      return res.status(404).json({ error: "Assignment not found" });
+    }
+
+    const questionPaper = assignment.questionPaper;
+
+    if (!questionPaper) {
+      return res.status(404).json({ error: "Question Paper not found" });
+    }
+    const { buffer } = await renderQuestionPaperToPdfBuffer({
+      ...questionPaper,
+      sections: questionPaper.sections as any,
+      answerKey: questionPaper.answerKey as any,
+    });
+    res.set("Content-Type", "application/pdf");
+    res.set(
+      "Content-Disposition",
+      `attachment; filename="${questionPaper.documentId}.pdf"`,
+    );
+    res.set("Content-Length", String(buffer.length));
+    res.send(buffer);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to render assignment", error: error });
   }
 });
 

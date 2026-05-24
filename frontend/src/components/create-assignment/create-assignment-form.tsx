@@ -122,10 +122,10 @@ export function CreateAssignmentForm() {
         </div>
       )}
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto min-h-0">
-        {/* Form Card */}
-        <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-sm">
+      {/* Outer Frame with rounded corners */}
+      <div className="flex-1 min-h-0 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm bg-white">
+        {/* Inner Scrollable Content */}
+        <div className="h-full overflow-y-auto p-4 md:p-8">
           {/* Header */}
           <div className="hidden md:block mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-1">

@@ -51,8 +51,20 @@ export async function processGenerateJob(job: Job<Jobs>) {
 
     const qpData = await runLLM(prompt);
 
-    const questionPaper = await prisma.questionPaper.create({
-      data: {
+    await prisma.questionPaper.upsert({
+      where: { assignmentId: assignment.id },
+      update: {
+        documentId: qpData.document_id,
+        institutionName: qpData.paper_meta.institution_name,
+        subject: qpData.paper_meta.subject,
+        className: qpData.paper_meta.class_name,
+        timeAllowed: qpData.paper_meta.time_allowed,
+        maxMarks: qpData.paper_meta.max_marks,
+        generalInstructions: qpData.paper_meta.general_instructions,
+        sections: qpData.sections as any,
+        answerKey: qpData.answer_key as any,
+      },
+      create: {
         assignmentId: assignment.id,
         documentId: qpData.document_id,
         institutionName: qpData.paper_meta.institution_name,
@@ -71,11 +83,7 @@ export async function processGenerateJob(job: Job<Jobs>) {
       data: { status: "COMPLETED" },
     });
   } catch (error) {
-    console.error("Error processing job:", error);
-    await prisma.assignment.update({
-      where: { id: assignmentId },
-      data: { status: "FAILED" },
-    });
+    console.error("Error processing job (will retry if attempts remain):", error);
     throw error;
   }
 }

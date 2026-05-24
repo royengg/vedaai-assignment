@@ -6,6 +6,7 @@ import { BookOpen, School, Clock, Calendar, Loader2, AlertCircle, RefreshCw } fr
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { BottomNav } from "@/components/bottom-nav";
+import { DownloadPdfCard } from "@/components/download-pdf-card";
 import { assignmentApi } from "@/api/assignment";
 import { useAuthStore } from "@/store/auth.store";
 
@@ -18,7 +19,7 @@ export default function AssignmentDetailPage() {
   const [assignment, setAssignment] = useState<any>(null);
   const [questionPaper, setQuestionPaper] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState<"review" | "generating" | "completed" | "failed" | "timeout">("review");
+  const [status, setStatus] = useState<"review" | "generating" | "completed" | "failed">("review");
   const [elapsedTime, setElapsedTime] = useState(0);
   const [progress, setProgress] = useState(0);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -58,6 +59,10 @@ export default function AssignmentDetailPage() {
         setStatus("completed");
       } else if (data.assignment.status === "FAILED") {
         setStatus("failed");
+      } else if (data.assignment.status === "PROCESSING") {
+        // A job is already running in the background
+        setStatus("generating");
+        startPolling();
       }
     } catch (error) {
       console.error("Failed to fetch assignment:", error);
@@ -67,6 +72,11 @@ export default function AssignmentDetailPage() {
   };
 
   const startPolling = () => {
+    // Prevent duplicate polling intervals
+    if (pollIntervalRef.current || timerIntervalRef.current) {
+      return;
+    }
+
     // Reset state
     startTimeRef.current = Date.now();
     setElapsedTime(0);
@@ -81,11 +91,7 @@ export default function AssignmentDetailPage() {
       const simulatedProgress = Math.min(10 + (elapsed / 90) * 80, 90);
       setProgress(simulatedProgress);
       
-      // Timeout after 3 minutes (180 seconds)
-      if (elapsed >= 180) {
-        stopPolling();
-        setStatus("timeout");
-      }
+      // No timeout — keep polling until backend reports COMPLETED or FAILED
     }, 1000);
 
     // Start polling every 3 seconds
@@ -140,6 +146,13 @@ export default function AssignmentDetailPage() {
     setElapsedTime(0);
   };
 
+  const handleCancel = () => {
+    stopPolling();
+    setStatus("review");
+    setProgress(0);
+    setElapsedTime(0);
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -180,14 +193,13 @@ export default function AssignmentDetailPage() {
               {status === "generating" && "Generating Question Paper"}
               {status === "completed" && "Generated Question Paper"}
               {status === "failed" && "Generation Failed"}
-              {status === "timeout" && "Generation Timeout"}
             </h1>
           </div>
         </div>
 
         {/* Content */}
         <main className="flex-1 bg-main-bg overflow-y-auto px-4 md:px-6 pb-24 md:pb-8">
-          <div className="max-w-2xl mx-auto">
+          <div className="w-full max-w-full md:max-w-5xl md:mx-auto">
             
             {/* REVIEW STATE */}
             {status === "review" && (
@@ -237,9 +249,18 @@ export default function AssignmentDetailPage() {
                 <div className="flex justify-end">
                   <button
                     onClick={handleGenerate}
-                    className="flex items-center gap-2 px-8 py-3 bg-button-dark text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+                    disabled={assignment.status === "PROCESSING"}
+                    className={`flex items-center gap-2 px-8 py-3 rounded-full text-sm font-medium transition-opacity ${
+                      assignment.status === "PROCESSING"
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-button-dark text-white hover:opacity-90"
+                    }`}
                   >
-                    <span>Generate Question Paper</span>
+                    <span>
+                      {assignment.status === "PROCESSING"
+                        ? "Generating..."
+                        : "Generate Question Paper"}
+                    </span>
                   </button>
                 </div>
               </>
@@ -259,7 +280,7 @@ export default function AssignmentDetailPage() {
                     Generating Question Paper
                   </h2>
                   <p className="text-sm text-gray-500 mb-8 max-w-md">
-                    Our AI is crafting your customized exam paper. This may take 10-30 seconds depending on complexity.
+                    Our AI is crafting your customized exam paper. This may take a moment depending on complexity.
                   </p>
                   
                   {/* Progress Bar */}
@@ -277,9 +298,17 @@ export default function AssignmentDetailPage() {
                   </div>
                   
                   {/* Elapsed Time */}
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 mb-6">
                     Elapsed: {formatTime(elapsedTime)}
                   </p>
+
+                  {/* Cancel Button */}
+                  <button
+                    onClick={handleCancel}
+                    className="px-6 py-2.5 border border-gray-300 text-gray-600 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             )}
@@ -310,101 +339,87 @@ export default function AssignmentDetailPage() {
               </div>
             )}
 
-            {/* TIMEOUT STATE */}
-            {status === "timeout" && (
-              <div className="bg-white rounded-2xl md:rounded-3xl p-8 md:p-12 shadow-sm">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mb-6">
-                    <Clock size={32} className="text-yellow-600" />
-                  </div>
-                  
-                  <h2 className="text-xl font-bold text-gray-800 mb-2">
-                    Generation Timeout
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-8 max-w-md">
-                    The generation is taking longer than expected. Please check back later or try again.
-                  </p>
-                  
-                  <button
-                    onClick={handleRetry}
-                    className="flex items-center gap-2 px-6 py-3 bg-button-dark text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    <RefreshCw size={16} />
-                    <span>Try Again</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* COMPLETED STATE */}
             {status === "completed" && questionPaper && (
               <>
+                <DownloadPdfCard
+                  assignmentId={id}
+                  subject={questionPaper.subject}
+                  className={questionPaper.className}
+                />
+
                 {/* Exam Paper Sheet */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-                  <div className="min-w-[320px] p-4 md:p-10">
+                <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <div className="p-4 md:p-6 lg:p-12">
                   {/* Header */}
-                  <div className="text-center mb-6 pb-6 border-b-2 border-gray-300">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 tracking-wide">
+                  <div className="text-center mb-8 pb-8 border-b-2 border-gray-300">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 tracking-wide">
                       {questionPaper.institutionName}
                     </h1>
-                    <div className="space-y-1 mt-4">
-                      <p className="text-base md:text-lg text-gray-800">
+                    <div className="space-y-2 mt-5">
+                      <p className="text-lg md:text-xl text-gray-800">
                         <span className="font-semibold">Subject:</span> {questionPaper.subject}
                       </p>
-                      <p className="text-base md:text-lg text-gray-800">
+                      <p className="text-lg md:text-xl text-gray-800">
                         <span className="font-semibold">Class:</span> {questionPaper.className}
                       </p>
                     </div>
                   </div>
 
                   {/* Meta Info Row */}
-                  <div className="flex items-center justify-between mb-4 text-sm font-medium text-gray-800">
+                  <div className="flex items-center justify-between mb-5 text-base font-medium text-gray-800">
                     <p>Time Allowed: <span className="font-normal">{questionPaper.timeAllowed}</span></p>
                     <p>Maximum Marks: <span className="font-normal">{questionPaper.maxMarks}</span></p>
                   </div>
 
                   {/* Instructions */}
-                  <p className="text-sm text-gray-700 mb-6 italic leading-relaxed">
+                  <p className="text-base text-gray-700 mb-8 italic leading-relaxed">
                     {questionPaper.generalInstructions}
                   </p>
 
                   {/* Student Info */}
-                  <div className="space-y-3 mb-8 text-sm text-gray-800">
+                  <div className="space-y-4 mb-10 text-base text-gray-800">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-semibold min-w-[70px] md:min-w-[100px]">Name:</span>
-                      <span className="border-b border-gray-400 flex-1 inline-block h-4"></span>
+                      <span className="font-semibold min-w-[80px] md:min-w-[120px]">Name:</span>
+                      <span className="border-b border-gray-400 w-48 md:w-64 inline-block h-5"></span>
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="font-semibold min-w-[70px] md:min-w-[100px]">Roll Number:</span>
-                      <span className="border-b border-gray-400 flex-1 inline-block h-4"></span>
+                      <span className="font-semibold min-w-[80px] md:min-w-[120px]">Roll Number:</span>
+                      <span className="border-b border-gray-400 w-40 md:w-56 inline-block h-5"></span>
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="font-semibold min-w-[70px] md:min-w-[100px]">Class:</span>
+                      <span className="font-semibold min-w-[80px] md:min-w-[120px]">Class:</span>
                       <span>{questionPaper.className}</span>
-                      <span className="font-semibold ml-2 md:ml-6">Section:</span>
-                      <span className="border-b border-gray-400 w-20 md:w-32 inline-block h-4"></span>
+                      <span className="font-semibold ml-4 md:ml-8">Section:</span>
+                      <span className="border-b border-gray-400 w-24 md:w-40 inline-block h-5"></span>
                     </div>
                   </div>
 
                   {/* Sections */}
-                  <div className="space-y-8">
+                  <div className="space-y-10">
                     {questionPaper.sections?.map((section: any, sIdx: number) => (
                       <div key={section.section_id}>
-                        <h2 className="text-center font-bold text-lg mb-2 tracking-wide text-gray-900">
+                        <h2 className="text-center font-bold text-xl md:text-2xl mb-3 tracking-wide text-gray-900">
                           {section.section_title}
                         </h2>
-                        <p className="text-sm text-gray-600 italic mb-5 text-center">
+                        <p className="text-base text-gray-600 italic mb-6 text-center">
                           {section.instructions}
                         </p>
 
                         {/* Questions */}
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                           {section.questions?.map((q: any) => (
-                            <div key={q.qid} className="text-sm text-gray-800">
-                              <div className="flex items-start gap-2 mb-1 leading-relaxed">
-                                <span className="font-semibold mt-0.5 min-w-[28px]">{q.qid}.</span>
+                            <div key={q.qid} className="text-base text-gray-800">
+                              <div className="flex items-start gap-3 mb-2 leading-relaxed">
+                                <span className="font-semibold mt-0.5 min-w-[32px]">{q.qid}.</span>
                                 <div className="flex-1">
-                                  <span className="inline-block px-1.5 py-0.5 bg-gray-100 rounded text-xs font-medium text-gray-600 mr-2 align-middle">
+                                  <span className={`inline-block px-2 py-0.5 rounded text-sm font-medium mr-2 align-middle ${
+                                    q.difficulty === "Easy" ? "bg-green-100 text-green-700" :
+                                    q.difficulty === "Moderate" ? "bg-yellow-100 text-yellow-700" :
+                                    q.difficulty === "Challenging" ? "bg-red-100 text-red-700" :
+                                    "bg-gray-100 text-gray-600"
+                                  }`}>
                                     {q.difficulty}
                                   </span>
                                   <span>{q.question_text}</span>
@@ -414,11 +429,11 @@ export default function AssignmentDetailPage() {
                               
                               {/* MCQ Options */}
                               {q.options && q.options.length > 0 && (
-                                <div className="ml-[36px] mt-2 space-y-1.5">
+                                <div className="ml-[44px] mt-2 space-y-2">
                                   {q.options.map((option: string, idx: number) => {
                                     const cleanOption = option.replace(/^[A-Da-d][\s.)]\s*/, '');
                                     return (
-                                      <p key={idx} className="text-gray-700 pl-1">
+                                      <p key={idx} className="text-gray-700 pl-1 text-base">
                                         {String.fromCharCode(65 + idx)}. {cleanOption}
                                       </p>
                                     );
@@ -431,32 +446,35 @@ export default function AssignmentDetailPage() {
 
                         {/* Divider between sections */}
                         {sIdx < questionPaper.sections.length - 1 && (
-                          <div className="border-t border-gray-200 my-6"></div>
+                          <div className="border-t border-gray-200 my-8"></div>
                         )}
                       </div>
                     ))}
                   </div>
 
                   {/* End Marker */}
-                  <div className="mt-8 pt-4 border-t border-gray-300">
-                    <p className="text-center font-bold text-sm tracking-wide text-gray-800">
+                  <div className="mt-10 pt-5 border-t border-gray-300">
+                    <p className="text-center font-bold text-base tracking-wide text-gray-800">
                       End of Question Paper
                     </p>
+                  </div>
                   </div>
                 </div>
                 </div>
 
                 {/* Answer Key */}
                 {questionPaper.answerKey && (
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-10 mt-6">
-                    <h3 className="text-center font-bold text-lg mb-6 text-gray-900">Answer Key</h3>
-                    <div className="space-y-3">
-                      {questionPaper.answerKey?.map((ans: any) => (
-                        <div key={ans.qid} className="flex items-start gap-3 text-sm">
-                          <span className="font-semibold min-w-[28px]">{ans.qid}.</span>
-                          <p className="text-gray-700 leading-relaxed">{ans.answer_text}</p>
-                        </div>
-                      ))}
+                  <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden mt-6">
+                    <div className="p-4 md:p-6 lg:p-10">
+                      <h3 className="text-center font-bold text-xl md:text-2xl mb-8 text-gray-900">Answer Key</h3>
+                      <div className="space-y-4">
+                        {questionPaper.answerKey?.map((ans: any) => (
+                          <div key={ans.qid} className="flex items-start gap-3 text-base">
+                            <span className="font-semibold shrink-0 w-[80px]">{ans.qid}.</span>
+                            <p className="text-gray-700 leading-relaxed flex-1">{ans.answer_text}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}

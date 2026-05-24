@@ -1,5 +1,6 @@
 import { Worker, WorkerOptions } from "bullmq";
 import { Job } from "bullmq";
+import { prisma } from "../config/db.config";
 import { redis } from "../config/redis.config";
 import { processGenerateJob } from "../processors/generation.processor";
 
@@ -28,3 +29,22 @@ const worker = new Worker<Jobs>(
   },
   workerOptions,
 );
+
+worker.on("failed", async (job, err) => {
+  if (!job) return;
+
+  const { assignmentId } = job.data;
+  console.error(
+    `Job ${job.id} for assignment ${assignmentId} failed after ${job.attemptsMade} attempts:`,
+    err,
+  );
+
+  try {
+    await prisma.assignment.update({
+      where: { id: assignmentId },
+      data: { status: "FAILED" },
+    });
+  } catch (dbError) {
+    console.error("Failed to update assignment status after job failure:", dbError);
+  }
+});
