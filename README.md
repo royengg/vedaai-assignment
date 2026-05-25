@@ -20,6 +20,12 @@ Install dependencies (from root):
 bun run install:all
 ```
 
+```bash
+bun run install
+```
+
+second bun run install is for installing concurrency package in the root folder
+
 Start development server (from root):
 
 ```bash
