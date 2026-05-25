@@ -53,6 +53,17 @@ export default function CreateAssignmentPage() {
           <p className="text-xs md:text-sm text-gray-500 ml-5">
             Set up a new assignment for your students
           </p>
+          {/* Mobile Back Button */}
+          <button
+            onClick={() => router.back()}
+            className="md:hidden mt-3 ml-5 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center"
+            aria-label="Go back"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700">
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+            </svg>
+          </button>
         </div>
 
         {/* Content */}

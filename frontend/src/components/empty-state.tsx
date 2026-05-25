@@ -70,9 +70,9 @@ export function EmptyState() {
         assist with grading.
       </p>
 
-      {/* CTA Button */}
-      <Link href="/assignments/create">
-        <button className="flex items-center gap-2 px-6 py-3.5 bg-button-dark text-white rounded-full font-medium text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98]">
+      {/* CTA Button - Desktop only */}
+      <Link href="/assignments/create" className="hidden md:block">
+        <button className="flex items-center gap-2 px-6 py-3.5 bg-button-dark text-white rounded-full font-medium text-sm leading-none transition-all duration-200 hover:opacity-90 active:scale-[0.98]">
           <Plus size={18} className="flex-shrink-0" />
           <span>Create Your First Assignment</span>
         </button>

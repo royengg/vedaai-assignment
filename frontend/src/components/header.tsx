@@ -31,7 +31,7 @@ export function Header() {
   return (
     <>
       {/* Desktop Header */}
-      <header className="hidden md:flex h-[60px] bg-white items-center justify-between px-6 fixed top-3 left-[280px] right-6 z-40 rounded-2xl shadow-md shadow-black/10">
+      <header className="hidden md:flex h-[60px] bg-white items-center justify-between px-6 fixed top-3 left-[280px] right-6 z-40 rounded-2xl shadow-2xl shadow-black/[0.07]">
         {/* Left: Back + Breadcrumb */}
         <div className="flex items-center gap-4">
           <button 
@@ -79,7 +79,7 @@ export function Header() {
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-lg shadow-black/10 border border-gray-100 overflow-hidden z-50">
+                <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-2xl shadow-lg shadow-black/10 border border-gray-100 overflow-hidden z-50">
                   <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -104,7 +104,7 @@ export function Header() {
       </header>
 
       {/* Mobile Header */}
-      <header className="flex md:hidden h-14 bg-[#e8e8e8] items-center justify-between px-4 fixed top-3 left-3 right-3 z-40 rounded-2xl shadow-md shadow-black/10">
+      <header className="flex md:hidden h-14 bg-white items-center justify-between px-4 fixed top-3 left-3 right-3 z-40 rounded-2xl shadow-2xl shadow-black/[0.07]">
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
           {/* Logo Icon */}

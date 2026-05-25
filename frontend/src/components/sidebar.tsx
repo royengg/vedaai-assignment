@@ -1,14 +1,14 @@
 "use client";
 
-import { 
-  LayoutGrid, 
-  Users, 
-  FileText, 
-  BookOpen, 
-  Clock, 
+import {
+  LayoutGrid,
+  Users,
+  FileText,
+  BookOpen,
+  Clock,
   Settings,
   Sparkles,
-  Library
+  Library,
 } from "lucide-react";
 import Link from "next/link";
 import { NavItem } from "./nav-item";
@@ -17,14 +17,19 @@ import { UserProfileCard } from "./user-profile-card";
 const navigationItems = [
   { href: "/home", icon: LayoutGrid, label: "Home" },
   { href: "/groups", icon: Users, label: "My Groups" },
-  { href: "/assignments", icon: FileText, label: "Assignments", isActive: true },
+  {
+    href: "/assignments",
+    icon: FileText,
+    label: "Assignments",
+    isActive: true,
+  },
   { href: "/toolkit", icon: BookOpen, label: "AI Teacher's Toolkit" },
   { href: "/library", icon: Library, label: "My Library" },
 ];
 
 export function Sidebar() {
   return (
-    <aside className="w-[260px] h-[calc(100vh-16px)] bg-white flex flex-col flex-shrink-0 fixed left-2 top-2 z-50 rounded-2xl shadow-lg shadow-black/5 border-r border-white/20">
+    <aside className="w-[260px] h-[calc(100vh-16px)] bg-white flex flex-col flex-shrink-0 fixed left-2 top-2 z-50 rounded-2xl shadow-2xl shadow-black/[0.07] border-r border-white/20">
       {/* Logo Section */}
       <div className="px-6 pt-6 pb-8">
         <div className="flex items-center gap-2">
@@ -68,16 +73,12 @@ export function Sidebar() {
       {/* Bottom Section */}
       <div className="px-3 pb-4 space-y-2">
         {/* Settings */}
-        <NavItem
-          href="/settings"
-          icon={Settings}
-          label="Settings"
-        />
-        
+        <NavItem href="/settings" icon={Settings} label="Settings" />
+
         {/* User Profile Card */}
         <UserProfileCard
           schoolName="Delhi Public School"
-          location="Bokaro Steel City"
+          location="Ruby Park, New Delhi"
           avatarUrl="/dps_logo1.png"
         />
       </div>

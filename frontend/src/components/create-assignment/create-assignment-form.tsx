@@ -20,8 +20,8 @@ interface QuestionType {
 const defaultQuestionTypes: QuestionType[] = [
   { id: "1", type: "Multiple Choice Questions", count: 4, marks: 1 },
   { id: "2", type: "Short Questions", count: 3, marks: 2 },
-  { id: "3", type: "Diagram/Graph-Based Questions", count: 5, marks: 5 },
-  { id: "4", type: "Numerical Problems", count: 5, marks: 5 },
+  { id: "3", type: "Diagram/Graph-Based Questions", count: 2, marks: 5 },
+  { id: "4", type: "Numerical Problems", count: 2, marks: 5 },
 ];
 
 const formSchema = z.object({
@@ -95,7 +95,7 @@ export function CreateAssignmentForm() {
     setError(null);
 
     try {
-      await assignmentApi.create({
+      const response = await assignmentApi.create({
         subjectName,
         schoolName,
         className,
@@ -105,8 +105,8 @@ export function CreateAssignmentForm() {
         additionalInstructions: additionalInfo || undefined,
       });
 
-      // Redirect to assignments list
-      router.push("/assignments");
+      // Redirect to assignment detail page where user can generate the question paper
+      router.push(`/assignments/${response.assignment.id}`);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
       setIsLoading(false);
@@ -114,7 +114,7 @@ export function CreateAssignmentForm() {
   };
 
   return (
-    <div className="w-full md:max-w-2xl md:mx-auto h-full flex flex-col">
+    <div className="w-full max-w-full md:max-w-2xl md:mx-auto h-full flex flex-col overflow-x-hidden">
       {/* Error Message */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl flex-shrink-0">
@@ -123,9 +123,9 @@ export function CreateAssignmentForm() {
       )}
 
       {/* Outer Frame with rounded corners */}
-      <div className="flex-1 min-h-0 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm bg-white">
+      <div className="flex-1 min-h-0 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm bg-[#F5F5F5]">
         {/* Inner Scrollable Content */}
-        <div className="h-full overflow-y-auto p-4 md:p-8">
+        <div className="h-full overflow-y-auto overflow-x-hidden p-4 md:p-8">
           {/* Header */}
           <div className="hidden md:block mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-1">

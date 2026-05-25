@@ -21,7 +21,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex md:hidden fixed bottom-4 left-4 right-4 h-16 bg-button-dark z-50 rounded-2xl shadow-lg shadow-black/20">
+    <nav className="flex md:hidden fixed bottom-4 left-4 right-4 h-16 bg-button-dark z-50 rounded-2xl shadow-2xl shadow-black/[0.07]">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href || pathname.startsWith(item.href + "/");

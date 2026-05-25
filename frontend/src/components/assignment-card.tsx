@@ -36,7 +36,7 @@ export function AssignmentCard({ id, subjectName, assignedOn, dueDate, onDelete 
   };
 
   return (
-    <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm relative">
+    <div className="bg-white rounded-2xl p-5 md:p-6 shadow-xl relative">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">

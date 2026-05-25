@@ -159,18 +159,16 @@ export default function AssignmentsPage() {
           )}
         </main>
 
-        {/* Floating Create Button - Only show when there are assignments */}
-        {assignments.length > 0 && (
-          <Link
-            href="/assignments/create"
-            className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-50"
-          >
-            <button className="w-12 h-12 md:w-auto md:h-auto md:flex md:items-center md:gap-2 md:px-6 md:py-3 bg-white md:bg-button-dark text-[#FF6B35] md:text-white rounded-full shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center">
-              <Plus size={20} className="md:size-4" />
-              <span className="hidden md:inline">Create Assignment</span>
-            </button>
-          </Link>
-        )}
+        {/* Floating Create Button */}
+        <Link
+          href="/assignments/create"
+          className={`fixed bottom-24 right-4 md:bottom-8 md:right-8 z-50 ${assignments.length === 0 ? "md:hidden" : ""}`}
+        >
+          <button className="w-12 h-12 md:w-auto md:h-auto md:flex md:items-center md:gap-2 md:px-6 md:py-3 bg-white md:bg-button-dark text-[#FF6B35] md:text-white rounded-full shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center">
+            <Plus size={20} className="md:size-4" />
+            <span className="hidden md:inline">Create Assignment</span>
+          </button>
+        </Link>
 
         <BottomNav />
       </div>
