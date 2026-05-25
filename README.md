@@ -2,6 +2,16 @@
 
 AI-powered assessment creation platform for teachers.
 
+login credential:
+mail - vedaai@gmail.com
+password - Ping_pong29
+
+deployed link - https://vedaai.cooldash.xyz/assignments
+
+demo video - https://drive.google.com/file/d/1T2Gk1ItjD4aXjr8q9vYnFa7iY0QYJZHz/view
+
+small favor - since i am using a free gemini api key, i can only use 8000 max tokens in the gemini config, so please dont increase the amount of questions in form because it will fail to do so because of limited questions. If you want to increase the amount of questions, you can use your own api key and increase the max tokens in gemini config.
+
 ## Quick Start
 
 Install dependencies (from root):
