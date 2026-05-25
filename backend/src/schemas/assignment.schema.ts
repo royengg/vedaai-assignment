@@ -11,7 +11,7 @@ export const createAssignmentSchema = z.object({
   schoolName: z.string().min(1, "School name is required"),
   className: z.string().min(1, "Class name is required"),
   duration: z.string().min(1, "Duration is required"),
-  dueDate: z.string().min(1, "Due date is required"),
+  dueDate: z.string().min(1, "Due date is required").regex(/\d/, "Due date must contain a number"),
   questionTypes: z.array(questionTypeSchema).min(1, "At least one question type is required"),
   additionalInstructions: z.string().optional(),
 });

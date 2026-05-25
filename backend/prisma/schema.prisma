@@ -43,7 +43,7 @@ model Assignment {
 model QuestionPaper {
   id                  String   @id @default(uuid())
   assignmentId        String   @unique
-  assignment          Assignment @relation(fields: [assignmentId], references: [id])
+  assignment          Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   documentId          String
   institutionName     String
   subject             String

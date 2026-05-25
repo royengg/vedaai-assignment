@@ -25,11 +25,11 @@ const defaultQuestionTypes: QuestionType[] = [
 ];
 
 const formSchema = z.object({
-  subjectName: z.string().min(1, "Subject name is required"),
-  schoolName: z.string().min(1, "School name is required"),
+  subjectName: z.string().min(1, "Subject name is required").regex(/\D/, "Subject name cannot be only numbers"),
+  schoolName: z.string().min(1, "School name is required").regex(/\D/, "School name cannot be only numbers"),
   className: z.string().min(1, "Class name is required"),
   duration: z.string().min(1, "Duration is required"),
-  dueDate: z.string().min(1, "Due date is required"),
+  dueDate: z.string().min(1, "Due date is required").regex(/\d/, "Due date must contain a number"),
   questionTypes: z.array(z.object({
     id: z.string(),
     type: z.string(),

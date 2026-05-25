@@ -27,7 +27,23 @@ export function AssignmentCard({ id, subjectName, assignedOn, dueDate, onDelete 
   }, []);
 
   const formatDate = (dateString: string) => {
+    // Handle DD-MM-YYYY format (due date)
+    const parts = dateString.split("-");
+    if (parts.length === 3 && parts[0].length === 2) {
+      const [day, month, year] = parts;
+      const date = new Date(`${year}-${month}-${day}`);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).replace(/\//g, "-");
+      }
+    }
+
+    // Fallback for ISO dates (assigned on)
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date";
     return date.toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "2-digit",
